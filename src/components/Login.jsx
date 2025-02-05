@@ -1,6 +1,8 @@
 import { useState } from "react";
-import { AUTH_CONFIG } from "../config";
 import "./Login.css";
+
+const AUTH_USERNAME = import.meta.env.VITE_AUTH_USERNAME; // For Vite
+const AUTH_PASSWORD = import.meta.env.VITE_AUTH_PASSWORD;
 
 const Login = ({ onLogin }) => {
   const [username, setUsername] = useState("");
@@ -9,7 +11,7 @@ const Login = ({ onLogin }) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (username === AUTH_CONFIG.username && password === AUTH_CONFIG.password) {
+    if (username === AUTH_USERNAME && password === AUTH_PASSWORD) {
       onLogin();
     } else {
       setError("Invalid username or password");
