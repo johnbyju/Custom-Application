@@ -9,10 +9,6 @@ const Login = ({ onLogin }) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-
-    console.log("Expected Username:", AUTH_CONFIG.username);
-    console.log("Expected Password:", AUTH_CONFIG.password);
-
     if (username === AUTH_CONFIG.username && password === AUTH_CONFIG.password) {
       onLogin();
     } else {
