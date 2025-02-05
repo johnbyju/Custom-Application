@@ -1,7 +1,7 @@
 import { useState } from "react";
 import "./Login.css";
 
-const AUTH_USERNAME = import.meta.env.VITE_AUTH_USERNAME; // For Vite
+const AUTH_USERNAME = import.meta.env.VITE_AUTH_USERNAME; 
 const AUTH_PASSWORD = import.meta.env.VITE_AUTH_PASSWORD;
 
 const Login = ({ onLogin }) => {
