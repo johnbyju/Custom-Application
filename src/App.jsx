@@ -1,65 +1,51 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 import IFrame from "./components/IFrame";
 import Reports from "./components/Reports";
 import Login from "./components/Login";
 
 const App = () => {
-  const [isLoggedIn, setIsLoggedIn] = useState(() => {
-    return sessionStorage.getItem("isLoggedIn") === "true";
-  });
+  const navigate = useNavigate();
+  const location = useLocation();
 
-  const [currentPage, setCurrentPage] = useState(() => {
-    return window.location.pathname.replace("/", "") || "home";
-  });
+  // Check login state from session storage
+  const [isLoggedIn, setIsLoggedIn] = useState(
+    sessionStorage.getItem("isLoggedIn") === "true"
+  );
 
-  // Handle Login
-  const handleLogin = () => {
-    setIsLoggedIn(true);
-    sessionStorage.setItem("isLoggedIn", "true"); // Store login state in session
-    navigateTo("home");
-  };
-
-  // Handle Logout
-  const handleLogout = () => {
-    setIsLoggedIn(false);
-    sessionStorage.removeItem("isLoggedIn"); 
-    navigateTo("");
-  };
-
-  // Handle Navigation
-  const navigateTo = (page) => {
-    setCurrentPage(page);
-    window.history.pushState({}, "", `/${page}`);
-  };
-
-  // Handle Browser Back/Forward Navigation
   useEffect(() => {
-    const handlePopState = () => {
-      const path = window.location.pathname.replace("/", "");
-      setCurrentPage(path || "home");
-    };
+    // If the user is NOT logged in and NOT on the reports page, redirect to login
+    if (!isLoggedIn && location.pathname !== "/reports" && location.pathname !== "/login") {
+      navigate("/login");
+    }
+  }, [isLoggedIn, location.pathname, navigate]);
 
-    window.addEventListener("popstate", handlePopState);
-    return () => window.removeEventListener("popstate", handlePopState);
-  }, []);
+  const handleLogin = () => {
+    sessionStorage.setItem("isLoggedIn", "true");
+    setIsLoggedIn(true);
+    navigate("/"); // Redirect to home after login
+  };
+
+  const handleLogout = () => {
+    sessionStorage.removeItem("isLoggedIn");
+    setIsLoggedIn(false);
+    navigate("/login"); // Redirect to login after logout
+  };
 
   return (
     <div className="app">
-      {!isLoggedIn ? (
-        <Login onLogin={handleLogin} />
-      ) : (
-        <>
-          {/* Navigation */}
-          <nav style={{ opacity: 0, pointerEvents: "auto" }}>
-            <button onClick={() => navigateTo("home")}>Home</button>
-            <button onClick={() => navigateTo("reports")}>Reports</button>
-            <button onClick={handleLogout}>Logout</button>
-          </nav>
+      <nav style={{ opacity: 0, pointerEvents: "auto" }}>
+        <button onClick={() => navigate("/")}>Home</button>
+        <button onClick={() => navigate("/reports")}>Reports</button>
+        <button onClick={handleLogout}>Logout</button>
+      </nav>
 
-          {/* Page Rendering */}
-          {currentPage === "home" && <IFrame />}
-          {currentPage === "reports" && <Reports />}
-        </>
+      {location.pathname === "/reports" ? (
+        <Reports />
+      ) : isLoggedIn ? (
+        <IFrame />
+      ) : (
+        <Login onLogin={handleLogin} />
       )}
     </div>
   );
