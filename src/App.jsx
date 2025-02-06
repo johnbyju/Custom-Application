@@ -22,7 +22,7 @@ const App = () => {
   // Handle Logout
   const handleLogout = () => {
     setIsLoggedIn(false);
-    sessionStorage.removeItem("isLoggedIn"); // Clear session storage on logout
+    sessionStorage.removeItem("isLoggedIn"); 
     navigateTo("");
   };
 
@@ -50,7 +50,7 @@ const App = () => {
       ) : (
         <>
           {/* Navigation */}
-          <nav>
+          <nav style={{ opacity: 0, pointerEvents: "auto" }}>
             <button onClick={() => navigateTo("home")}>Home</button>
             <button onClick={() => navigateTo("reports")}>Reports</button>
             <button onClick={handleLogout}>Logout</button>
