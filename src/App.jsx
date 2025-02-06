@@ -1,26 +1,38 @@
 import React, { useState, useEffect } from "react";
 import IFrame from "./components/IFrame";
-import Login from "./components/Login";
 import Reports from "./components/Reports";
+import Login from "./components/Login";
 
 const App = () => {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [currentPage, setCurrentPage] = useState("home");
+  const [isLoggedIn, setIsLoggedIn] = useState(() => {
+    return sessionStorage.getItem("isLoggedIn") === "true";
+  });
 
-  // Function to handle login
+  const [currentPage, setCurrentPage] = useState(() => {
+    return window.location.pathname.replace("/", "") || "home";
+  });
+
+  // Handle Login
   const handleLogin = () => {
     setIsLoggedIn(true);
-    window.history.pushState({}, "", "/home"); // Default page after login
-    setCurrentPage("home");
+    sessionStorage.setItem("isLoggedIn", "true"); // Store login state in session
+    navigateTo("home");
   };
 
-  // Function to handle navigation
+  // Handle Logout
+  const handleLogout = () => {
+    setIsLoggedIn(false);
+    sessionStorage.removeItem("isLoggedIn"); // Clear session storage on logout
+    navigateTo("");
+  };
+
+  // Handle Navigation
   const navigateTo = (page) => {
     setCurrentPage(page);
-    window.history.pushState({}, "", `/${page}`); // Update URL
+    window.history.pushState({}, "", `/${page}`);
   };
 
-  // Handle browser navigation (back/forward buttons)
+  // Handle Browser Back/Forward Navigation
   useEffect(() => {
     const handlePopState = () => {
       const path = window.location.pathname.replace("/", "");
@@ -37,13 +49,14 @@ const App = () => {
         <Login onLogin={handleLogin} />
       ) : (
         <>
-          {/* Navigation Buttons */}
+          {/* Navigation */}
           <nav>
             <button onClick={() => navigateTo("home")}>Home</button>
             <button onClick={() => navigateTo("reports")}>Reports</button>
+            <button onClick={handleLogout}>Logout</button>
           </nav>
 
-          {/* Conditionally Render Components Based on URL */}
+          {/* Page Rendering */}
           {currentPage === "home" && <IFrame />}
           {currentPage === "reports" && <Reports />}
         </>
